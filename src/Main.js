@@ -1,6 +1,6 @@
 // initiating vaiables
 
-var ApiKey = "";
+var ApiKey ="e05a0056d9a60887f4074642759dc724";
 
 const reqTypes = {
     AlbumSerach: "http://ws.audioscrobbler.com/2.0/?method=album.search&album=ARGALB&api_key=YOUR_API_KEY&format=json",
@@ -15,8 +15,16 @@ const reqTypes = {
 
 function forgeRequest(type, artist="",album="",track=""){
     var rtn = String(type).replace("YOUR_API_KEY", ApiKey);
-    if(String(type).includes("ARGART") && artist != ""){rtn = rtn.replace("ARGART", artist);}else{return -1;}
-    if(String(type).includes("ARGALB") && album != ""){rtn = rtn.replace("ARGALB", album);}else{return -1;}
-    if(String(type).includes("ARGTR") && track != ""){rtn = rtn.replace("ARGTR", track);}else{return -1;}
+    if(String(rtn).includes("ARGART")){if(artist == ""){return -1;}rtn = rtn.replace("ARGART", artist);}
+    if(String(rtn).includes("ARGALB")){if(album == ""){return -1;}rtn = rtn.replace("ARGALB", album);}
+    if(String(rtn).includes("ARGTR")){if(track == ""){return -1;}rtn = rtn.replace("ARGTR", track);}
     return rtn;
+}
+
+function search(){
+    
+}
+
+function selectFilter(){
+    
 }
