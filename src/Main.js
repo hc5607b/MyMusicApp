@@ -1,6 +1,6 @@
 // initiating vaiables
 
-var ApiKey = "e05a0056d9a60887f4074642759dc724";
+var ApiKey = "";
 
 const reqTypes = {
     AlbumSerach: "http://ws.audioscrobbler.com/2.0/?method=album.search&album=ARGALB&api_key=YOUR_API_KEY&format=json",
