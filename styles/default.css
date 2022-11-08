@@ -39,8 +39,8 @@
 }
 
 .typeSelBtn{
-    height: 24px;
-    margin: 3px;
+    height: 32px;
+    margin: 4px;
     padding-left: 10px;
     padding-right: 10px;
     background-color: rgb(70, 70, 70);
@@ -59,7 +59,19 @@
     border-color: white;
 }
 
+.defBorder{
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(175, 175, 175);
+    border-radius: 18px;
+    border-color: rgb(70, 70, 70);
+}
 
+/* 
+
+        MAIN LINES
+
+*/
 
 body{
     background-color: rgb(45, 45, 45);
@@ -70,38 +82,168 @@ body{
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 15px;
-    height: 600px;
+    height: 900px;
 }
 
 .search{
     height: 45px;
-    border-style: dotted;
-    border-width: 1px;
     margin: 5px;
-    border-color: white;
 }
 
 .typeSel{
-    height: 30px;
-    border-style: dotted;
-    border-width: 1px;
+    height: 40px;
     margin: 5px;
-    border-color: white;
 }
 
 .result{
-    border-style: dotted;
-    border-width: 1px;
-    height: 80%;
+    height: 780px;
     margin: 5px;
     margin-top: 10px;
+    color: white;
+}
+
+.CTRBRD{
+    border-style: dotted;
+    border-width: 1px;
     border-color: white;
 }
 
-.defBorder{
+/* 
+
+        RESULTS
+
+*/
+
+/* 
+
+        All
+
+*/
+
+.topRow {
+    display: grid;
+    grid-template-columns: 35% 65%;
+}
+
+.topResult{
+    display: block;
+    margin: 10px;
+    height: 230px;
+    padding: 10px;
+    background-color: rgb(54, 54, 54);
+    border-color: rgb(54, 54, 54);
     border-style: solid;
     border-width: 1px;
-    border-color: rgb(175, 175, 175);
-    border-radius: 15px;
-    border-color: rgb(70, 70, 70);
+    border-radius: 8px;
+    /* width: 300px; */
+}
+
+.topTitle{
+    font-size: 40px;
+}
+
+.topJoker{
+    /* display: none; */
+    color: grey;
+    padding-right: 15px;
+}
+
+.topType{
+    background-color: rgb(32, 32, 32);
+    border-style: solid;
+    border-color: rgb(54, 54, 54);
+    border-radius: 20px;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.topSongRes{
+    display: block;
+    margin: 10px;
+    height: 250px;
+    /* width: 300px; */
+}
+
+/* 
+
+        TRACK
+
+*/
+
+.track{
+    height: 55px;
+    margin: 1px;
+    padding: 2px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: transparent;
+}
+
+.track:hover{
+    background-color: rgb(94, 94, 94);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    border-color: rgb(94, 94, 94);
+}
+
+.trImg{
+    float: left;
+}
+
+.trInfoParent{
+    float: left;
+}
+
+.trName{
+    display: grid;
+    padding-left: 10px;
+    padding-bottom: 15px;
+    padding-top: 5px;
+    font-weight: bold;
+}
+
+.trArtist{
+    display: grid;
+    padding-left: 10px;
+    color: rgb(161, 161, 161);
+}
+
+.trLen{
+    float: right;
+    padding-top: 20px;
+    padding-right: 10px;
+    color: rgb(161, 161, 161);
+}
+
+/* 
+
+        // TRACK
+
+*/
+
+/* 
+
+        Album / Artist card
+
+*/
+
+
+
+
+
+/* 
+
+        // Album / Artist card
+
+*/
+
+.topAlbumRes{
+    height: 250px;
+}
+
+.topArtistRes{
+    height: 250px;
 }
