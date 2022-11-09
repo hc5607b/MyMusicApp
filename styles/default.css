@@ -75,12 +75,13 @@
 
 body{
     background-color: rgb(45, 45, 45);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .frame{
-    border-style: solid;
-    margin-left: 5%;
-    margin-right: 5%;
+    /* border-style: solid; */
+    margin-left: 8%;
+    margin-right: 8%;
     margin-top: 15px;
     height: 900px;
 }
@@ -105,7 +106,14 @@ body{
 .CTRBRD{
     border-style: dotted;
     border-width: 1px;
-    border-color: white;
+    border-color: transparent;
+}
+
+.listTitle{
+    margin: 10px;
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 24px;
 }
 
 /* 
@@ -144,7 +152,7 @@ body{
 
 .topJoker{
     /* display: none; */
-    color: grey;
+    color: rgb(161, 161, 161);
     padding-right: 15px;
 }
 
@@ -231,8 +239,34 @@ body{
 */
 
 
+.album {
+    height: 230px;
+    width: 180px;
+    margin: 10px;
+    background-color: rgb(54, 54, 54);
+    border-color: rgb(54, 54, 54);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 8px;
+    float: left;
+}
 
+.albImg{
+    margin: 20px;
+    margin-top: 10px;
+}
 
+.albName{
+    font-weight: bold;
+    font-size: 17px;
+    margin-left: 10px;
+}
+
+.albArtist{
+    font-size: 15px;
+    color: rgb(161, 161, 161);
+    margin-left: 10px;
+}
 
 /* 
 
@@ -243,6 +277,48 @@ body{
 .topAlbumRes{
     height: 250px;
 }
+
+/* 
+
+        Album / Artist card
+
+*/
+
+
+.artist {
+    height: 230px;
+    width: 180px;
+    margin: 10px;
+    background-color: rgb(54, 54, 54);
+    border-color: rgb(54, 54, 54);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 8px;
+    float: left;
+}
+
+.artImg{
+    margin: 20px;
+    margin-top: 10px;
+}
+
+.artName{
+    font-weight: bold;
+    font-size: 17px;
+    margin-left: 10px;
+}
+
+.artArtist{
+    font-size: 15px;
+    color: rgb(161, 161, 161);
+    margin-left: 10px;
+}
+
+/* 
+
+        // Album / Artist card
+
+*/
 
 .topArtistRes{
     height: 250px;
