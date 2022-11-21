@@ -21,6 +21,10 @@
     display: grid;
 }
 
+.hideItem{
+    display: none;
+}
+
 
 .searchIP{
     height: 35px;
