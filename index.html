@@ -8,10 +8,10 @@
     <body>
         <div class="frame">
             <div class="search CTRBRD">
-                <input type="text" placeholder="Search" class="searchIP">
+                <input type="text" placeholder="Search artist" class="searchIP">
             </div>
             <div class="typeSel CTRBRD">
-                <button class="typeSelBtn defBorder">All</button>
+                <button class="typeSelBtn defBorder typeSelBtnSelected">All</button>
                 <button class="typeSelBtn defBorder">Tracks</button>
                 <button class="typeSelBtn defBorder">Albums</button>
                 <button class="typeSelBtn defBorder">Artists</button>
@@ -19,16 +19,16 @@
             <div class="result CTRBRD">
                 <div class="all">
                     <div class="topRow">
-                        <div class="listTitle">Top result</div>
-                        <div class="listTitle">Tracks</div>
+                        <div class="listTitle lst1">Top result</div>
+                        <div class="listTitle lst2">Tracks</div>
                         <div class="topResParent">
                             <div class="topResult">
-                                <img src="styles/images/noimage.png" alt="" width="130" height="130">
+                                <img src="styles/images/noimage.png" alt="" width="130" height="130" class="topImg">
                                 <p>
                                 <span class="topTitle">Title</span>
                                 <p>
                                 <span class="topJoker">Artist name optional</span>
-                                <span class="topType">Type</span>
+                                <!-- <span class="topType">Type</span> -->
                             </div>
                         </div>
                         <div class="topSongRes CTRBRD">
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="listTitle CTRBRD">Albums</div>
+                    <div class="listTitle lst3 CTRBRD">Albums</div>
                     <div class="topAlbumRes CTRBRD">
                         <div class="album">
                             <img class="albImg" src="styles/images/noimage.png" alt="" width="140" height="140">
@@ -50,7 +50,7 @@
                             <span class="albArtist">Artist</span>
                         </div>
                     </div>
-                    <div class="listTitle CTRBRD">Artists</div>
+                    <div class="listTitle lst4 CTRBRD">Similar artists</div>
                     <div class="topArtistRes CTRBRD">
                         <div class="artist">
                             <img class="artImg" src="styles/images/noimage.png" alt="" width="140" height="140">

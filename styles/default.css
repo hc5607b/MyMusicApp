@@ -22,7 +22,11 @@
 }
 
 .hideItem{
-    display: none;
+    display: none !important;
+}
+
+.fixTracksShow{
+    display: block !important;
 }
 
 
@@ -55,12 +59,16 @@
 .typeSelBtn:hover{
     background-color: rgb(80, 80, 80);
     transition: .3s;
+    cursor: pointer;
 }
 
-.typeSelBtn:focus{
+.typeSelBtnSelected{
     background-color: white;
     color: black;
     border-color: white;
+}
+.typeSelBtnSelected:hover{
+    background-color: white;
 }
 
 .defBorder{

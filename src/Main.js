@@ -13,7 +13,26 @@ var topArtistParent;
 
 var resultsParent;
 
+var filterAll;
+var filterTracks;
+var filterAlbums;
+var filterArtist;
+
+var curFilter = 0;
+
+var printTrackCount = 4;
+var printAlbumCount = 4;
+var printArtistCount = 4;
+
+var curmbid;
+
+var jsonTracks;
+var jsonAlbums;
+var jsonSimilar;
+var jsonInfo;
+
 window.onload = function(){
+
     // initiating variables
     searchBox = document.getElementsByClassName("searchIP")[0];
     topResultTemp = document.getElementsByClassName("topResult")[0];
@@ -27,15 +46,27 @@ window.onload = function(){
     topArtistParent = document.getElementsByClassName("topArtistRes")[0];
     resultsParent = document.getElementsByClassName("result")[0];
 
+    let filters = document.getElementsByClassName("typeSelBtn");
+    filterAll = filters[0];
+    filterTracks = filters[1];
+    filterAlbums = filters[2];
+    filterArtist = filters[3];
+
     // remove templates
 
     clearResults();
-    // showResults(false);
+    showResults(false);
+    resetFilters();
 
     // adding eventlisteners
     searchBox.addEventListener("keypress", function(e){if(e.key == "Enter"){search();}}, false);
+    filterAll.addEventListener("click", function(e){selectFilter(filterAll)}, false);
+    filterTracks.addEventListener("click", function(e){selectFilter(filterTracks)}, false);
+    filterAlbums.addEventListener("click", function(e){selectFilter(filterAlbums)}, false);
+    filterArtist.addEventListener("click", function(e){selectFilter(filterArtist)}, false);
 
     search("Iron maiden");
+    // search("Deadmouse");
 }
 
 // help functions
@@ -79,7 +110,10 @@ const mbidReqTypes = {
     ArtistInfo: "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=MBID&api_key=YOUR_API_KEY&format=json",
     ArtistSimilar: "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=MBID&api_key=YOUR_API_KEY&format=json",
     TrackInfo: "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=YOUR_API_KEY&mbid=MBID&format=json",
-    TrackSimilar: "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&mbid=MBID&api_key=YOUR_API_KEY&format=json"
+    TrackSimilar: "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&mbid=MBID&api_key=YOUR_API_KEY&format=json",
+    ArtistTopAlbums: "http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&mbid=MBID&api_key=YOUR_API_KEY&format=json",
+    ArtistTopTracks: "http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&mbid=MBID&api_key=YOUR_API_KEY&format=json",
+    AtistSimilar: "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=MBID&api_key=YOUR_API_KEY&format=json"
 }
 
 function forgeRequest(type, artist="",album="",track=""){
@@ -97,7 +131,20 @@ function forgeMbidRequest(type, mbid){
 function getJson(type, artist="",album="",track=""){
     var rtn;
     let url = forgeRequest(type, artist,album,track)
-    console.log(url);
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == 200){
+            rtn = JSON.parse(req.responseText);
+        }
+    }
+    req.open("GET", url, false);
+    req.send();
+    return rtn;
+}
+
+function mbidGetJson(type, mbid){
+    var rtn;
+    let url = forgeMbidRequest(type, mbid)
     var req = new XMLHttpRequest();
     req.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200){
@@ -111,31 +158,79 @@ function getJson(type, artist="",album="",track=""){
 
 // the code
 
-function search(keyword = ""){
-    if(keyword == ""){keyword = searchBox.value;}
-    if(keyword == ""){return;}
+function search(keyword = "", mbid=""){
+    if(keyword == "" && mbid == ""){keyword = searchBox.value;}
+    if(keyword == "" && mbid == ""){return;}
 
     clearResults();
+    showResults(false);
 
-    printTracks(getJson(reqTypes.TrackSearch, "","",keyword));
-    printAlbums(getJson(reqTypes.AlbumSerach, "",keyword,""));
-    printArtist(getJson(reqTypes.ArtistSearch, keyword,"",""));
+    curmbid = getArtistMbid(keyword);
+    console.log(curmbid);
+    if(curmbid == -1){showResults(false);alert("Artist not found");return;}
+
+    jsonTracks = mbidGetJson(mbidReqTypes.ArtistTopTracks, curmbid).toptracks.track;
+    jsonAlbums = mbidGetJson(mbidReqTypes.ArtistTopAlbums, curmbid).topalbums.album;
+    jsonSimilar = mbidGetJson(mbidReqTypes.ArtistSimilar, curmbid).similarartists.artist;
+    jsonInfo = mbidGetJson(mbidReqTypes.ArtistInfo, curmbid).artist;
+
+    print();
+
 }
 
-function printTracks(json){
+function print(){
+    clearResults();
+    switch(curFilter){
+        case 0:
+            printTopResult();
+            printAlbums();
+            printTracks();
+            printArtist();
+            break;
+        case 1:
+            printTracks();
+            break;
+        case 2:
+            printAlbums();
+            break;
+        case 3:
+            printArtist();
+            break;
+    }
+    showResults(true);
+}
+
+function getArtistMbid(name){
+    data = getJson(forgeRequest(reqTypes.ArtistSearch, name));
+    if(data.hasOwnProperty('error')){return -1;}
+    if(data.results.artistmatches.artist[0].mbid.length < 10){return -1;}
+    return data.results.artistmatches.artist[0].mbid;
+}
+
+function printTopResult(){
+    let inst = topResultTemp;
+    inst.getElementsByClassName("topTitle")[0].innerHTML = jsonInfo.name;
+    inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
+    inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.stats.listeners;
+    // inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist.name;
+        
+    topResultParent.insertAdjacentHTML('beforeend', inst.outerHTML);
+}
+
+function printTracks(){
     var addedTr = 0;
     var trI = -1;
-    if(Object.keys(json.results.trackmatches.track).length < 5){maxRes = Object.keys(json.results.trackmatches.track).length;}
-    // console.log(maxRes);
+    let maxRes = printTrackCount;
+    if(Object.keys(jsonTracks).length < maxRes){maxRes = Object.keys(jsonTracks).length;}
 
-    while(addedTr < 4){
+    while(addedTr < maxRes){
         trI++;
-        let tr = json.results.trackmatches.track[trI];
+        let tr = jsonTracks[trI];
         
         let inst = trackInfoTemp;
         inst.getElementsByClassName("trImg")[0].src = tr.image[2]['#text'];
         inst.getElementsByClassName("trName")[0].innerHTML = tr.name;
-        inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist;
+        inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist.name;
         inst.getElementsByClassName("trLen")[0].innerHTML = tr.listeners;
         
         addedTr++;
@@ -143,35 +238,35 @@ function printTracks(json){
     }
 }
 
-function printAlbums(json){
+function printAlbums(){
     var addedTr = 0;
     var trI = -1;
-    if(Object.keys(json.results.albummatches.album).length < 5){maxRes = Object.keys(json.results.albummatches.album).length;}
-    // console.log(maxRes);
+    let maxRes = printAlbumCount;
+    if(Object.keys(jsonAlbums).length < printAlbumCount){maxRes = Object.keys(jsonAlbums).length;}
 
-    while(addedTr < 4){
+    while(addedTr < maxRes){
         trI++;
-        let tr = json.results.albummatches.album[trI];
+        let tr = jsonAlbums[trI];
         
         let inst = albumInfoTemp;
         inst.getElementsByClassName("albImg")[0].src = tr.image[2]['#text'];
         inst.getElementsByClassName("albName")[0].innerHTML = tr.name;
-        inst.getElementsByClassName("albArtist")[0].innerHTML = tr.artist;
+        inst.getElementsByClassName("albArtist")[0].innerHTML = tr.artist.name;
         
         addedTr++;
         topAlbumParent.insertAdjacentHTML('beforeend', inst.outerHTML);
     }
 }
 
-function printArtist(json){
+function printArtist(){
     var addedTr = 0;
     var trI = -1;
-    if(Object.keys(json.results.artistmatches.artist).length < 5){maxRes = Object.keys(json.results.artistmatches.artist).length;}
-    // console.log(maxRes);
+    let maxRes = printArtistCount;
+    if(Object.keys(jsonSimilar).length < printArtistCount){maxRes = Object.keys(jsonSimilar).length;}
 
-    while(addedTr < 4){
+    while(addedTr < maxRes){
         trI++;
-        let tr = json.results.artistmatches.artist[trI];
+        let tr = jsonSimilar[trI];
         
         let inst = artistInfoTemp;
         inst.getElementsByClassName("artImg")[0].src = tr.image[2]['#text'];
@@ -182,6 +277,85 @@ function printArtist(json){
     }
 }
 
-function selectFilter(){
-    
+// filter settings
+
+
+function showAll(){
+    if(document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.remove("fixTracksShow");}
+    if(document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.remove("hideItem");}
+    if(document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.remove("hideItem");}
+}
+
+function hideTracks(){
+    if(!document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.add("hideItem");}
+}
+
+function showTracks(){
+    if(!document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.add("hideItem");}
+    if(!document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.add("hideItem");}
+    if(!document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.add("fixTracksShow");}
+}
+
+function hideAlbums(){
+    if(!document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.add("hideItem");}
+    if(!document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.add("hideItem");}
+}
+
+function hideArtists(){
+    if(!document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.add("hideItem");}
+    if(!document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.add("hideItem");}
+}
+
+function resetFilters(){
+    if(curFilter == 0){return;}
+    filterAll.classList.add("typeSelBtnSelected");
+    filterTracks.classList.remove("typeSelBtnSelected");
+    filterAlbums.classList.remove("typeSelBtnSelected");
+    filterArtist.classList.remove("typeSelBtnSelected");
+}
+
+function updateFilterGraph(){
+    let fs = [filterAll, filterTracks, filterAlbums, filterArtist];
+    for(let i = 0; i < fs.length; i++){
+        if(curFilter == i){fs[i].classList.add("typeSelBtnSelected"); continue;}
+        fs[i].classList.remove("typeSelBtnSelected");
+    }
+}
+
+function selectFilter(sender){
+    showAll();
+    switch(sender.textContent){
+        case "All":
+            curFilter = 0;
+            printAlbumCount = 4;
+            printArtistCount = 4;
+            printTrackCount = 4;
+            break;
+        case "Tracks":
+            curFilter = 1;
+            printTrackCount = 15;
+            hideAlbums();
+            hideArtists();
+            showTracks();
+            break;
+        case "Albums":
+            curFilter = 2;
+            printAlbumCount = 15;
+            hideTracks();
+            hideArtists();
+            break;
+        case "Artists":
+            curFilter = 3;
+            printArtistCount = 15;
+            hideTracks();
+            hideAlbums();
+            break;
+    }
+    updateFilterGraph();
+    print();
 }
