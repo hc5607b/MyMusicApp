@@ -1,5 +1,6 @@
 // creating vaiables
 var ApiKey ="e05a0056d9a60887f4074642759dc724";
+
 var searchBox;
 var topResultTemp;
 var trackInfoTemp;
@@ -33,7 +34,7 @@ var jsonInfo;
 
 window.onload = function(){
 
-    // initiating variables
+    // finding dom elements
     searchBox = document.getElementsByClassName("searchIP")[0];
     topResultTemp = document.getElementsByClassName("topResult")[0];
     trackInfoTemp = document.getElementsByClassName("track")[0];
@@ -46,32 +47,36 @@ window.onload = function(){
     topArtistParent = document.getElementsByClassName("topArtistRes")[0];
     resultsParent = document.getElementsByClassName("result")[0];
 
+    // finding dom elements with different style
     let filters = document.getElementsByClassName("typeSelBtn");
     filterAll = filters[0];
     filterTracks = filters[1];
     filterAlbums = filters[2];
     filterArtist = filters[3];
 
-    // remove templates
-
+    // remove templates and clear the view
     clearResults();
     showResults(false);
     resetFilters();
 
-    // adding eventlisteners
+    // adding eventlisteners for search and filters
     searchBox.addEventListener("keypress", function(e){if(e.key == "Enter"){search();}}, false);
     filterAll.addEventListener("click", function(e){selectFilter(filterAll)}, false);
     filterTracks.addEventListener("click", function(e){selectFilter(filterTracks)}, false);
     filterAlbums.addEventListener("click", function(e){selectFilter(filterAlbums)}, false);
     filterArtist.addEventListener("click", function(e){selectFilter(filterArtist)}, false);
 
+    // lets make some search 
     search("Iron maiden");
-    // search("Deadmouse");
 }
 
-// help functions
+/*
+*       HELP FUNCTIONS
+*/
 
+// function for clearing results
 function clearResults(){
+    // checks if parent has choldren and remove them all for all categories
     while(topResultParent.children.length>0){
         topResultParent.children[0].remove();
     }
@@ -86,6 +91,7 @@ function clearResults(){
     }
 }
 
+// function for switching overall results visibility
 function showResults(visible){
     if(!visible && !resultsParent.className.includes("hideItem")){
         resultsParent.classList.add("hideItem");
@@ -95,6 +101,7 @@ function showResults(visible){
     }
 }
 
+// structure for request urls with search words
 const reqTypes = {
     AlbumSerach: "http://ws.audioscrobbler.com/2.0/?method=album.search&album=ARGALB&api_key=YOUR_API_KEY&format=json",
     AlbumInfo: "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=YOUR_API_KEY&artist=ARGART&album=ARGALB&format=json",
@@ -105,6 +112,8 @@ const reqTypes = {
     TrackInfo: "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=YOUR_API_KEY&artist=ARGART&track=ARGTR&format=json",
     TrackSimilar: "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=ARGART&track=ARGTR&api_key=YOUR_API_KEY&format=json"
 }
+
+// structure for request urls with mbid
 const mbidReqTypes = {
     AlbumInfo: "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=YOUR_API_KEY&mbid=MBID&format=json",
     ArtistInfo: "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=MBID&api_key=YOUR_API_KEY&format=json",
@@ -116,33 +125,52 @@ const mbidReqTypes = {
     AtistSimilar: "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=MBID&api_key=YOUR_API_KEY&format=json"
 }
 
+// function for creating request url without mbid
 function forgeRequest(type, artist="",album="",track=""){
+    // adding apikey to request
     var rtn = String(type).replace("YOUR_API_KEY", ApiKey);
+
+    // lets filter what else request needs
     if(String(rtn).includes("ARGART")){if(artist == ""){return -1;}rtn = rtn.replace("ARGART", artist);}
     if(String(rtn).includes("ARGALB")){if(album == ""){return -2;}rtn = rtn.replace("ARGALB", album);}
     if(String(rtn).includes("ARGTR")){if(track == ""){return -3;}rtn = rtn.replace("ARGTR", track);}
     return rtn;
 }
 
+// function for creating request url with mbid
 function forgeMbidRequest(type, mbid){
+    // creates request url with apikey and given mbid
     return String(type).replace("YOUR_API_KEY", ApiKey).replace("MBID", mbid);
 }
 
+// function for apicall. takes request type and keywords as parametters
 function getJson(type, artist="",album="",track=""){
     var rtn;
+    // creates request url with helpfunction. passes paremmetters to helpfunction
     let url = forgeRequest(type, artist,album,track)
+
+    // lets create xhttp request and itit it
     var req = new XMLHttpRequest();
+
+    // creates event listener and function for ready state change
     req.onreadystatechange = function(){
+        // lets check that everythong went good with request
         if(this.readyState == 4 && this.status == 200){
+            // changes response text to json and saves it to variable to return
             rtn = JSON.parse(req.responseText);
         }
     }
+    // sends unsynchronized get request
     req.open("GET", url, false);
     req.send();
+
+    // returns response
     return rtn;
 }
 
+// function for apicall. takes request type and mbid.
 function mbidGetJson(type, mbid){
+    // all same things as abowe. only difference is url helpfunction
     var rtn;
     let url = forgeMbidRequest(type, mbid)
     var req = new XMLHttpRequest();
@@ -156,88 +184,145 @@ function mbidGetJson(type, mbid){
     return rtn;
 }
 
-// the code
 
-function search(keyword = "", mbid=""){
-    if(keyword == "" && mbid == ""){keyword = searchBox.value;}
-    if(keyword == "" && mbid == ""){return;}
+/*
+*       The Code
+*/
 
+// search with given keyword
+function search(keyword = ""){
+
+    // lets check if function was called with ot without keyword parameter
+    if(keyword == ""){keyword = searchBox.value;}
+    // if theres no keyword applied, cancel search
+    if(keyword == ""){return;}
+
+    // clear site for new data
     clearResults();
     showResults(false);
 
+    // gets artist mbid and saves it to variable
     curmbid = getArtistMbid(keyword);
-    console.log(curmbid);
-    if(curmbid == -1){showResults(false);alert("Artist not found");return;}
 
+    // if mbid is negative, function returned error. In this case search is cancelled and user notified
+    if(curmbid < 0){showResults(false);alert("Artist not found");return;}
+
+    // get artist data with mbid
     jsonTracks = mbidGetJson(mbidReqTypes.ArtistTopTracks, curmbid).toptracks.track;
     jsonAlbums = mbidGetJson(mbidReqTypes.ArtistTopAlbums, curmbid).topalbums.album;
     jsonSimilar = mbidGetJson(mbidReqTypes.ArtistSimilar, curmbid).similarartists.artist;
     jsonInfo = mbidGetJson(mbidReqTypes.ArtistInfo, curmbid).artist;
 
+    // print data
     print();
-
 }
 
+// prints current data
 function print(){
+    // clears site for new data
     clearResults();
+
+    // checks which filter is on
     switch(curFilter){
-        case 0:
+        case 0: // show all
             printTopResult();
             printAlbums();
             printTracks();
             printArtist();
             break;
-        case 1:
+        case 1: // show tracks
             printTracks();
             break;
-        case 2:
+        case 2: // show albums
             printAlbums();
             break;
-        case 3:
+        case 3: // show similar artists
             printArtist();
             break;
     }
+
+    // makes sure that result parent is visible
     showResults(true);
 }
 
+// function for getting artis mbid
 function getArtistMbid(name){
+    // initiate path for mbid
+    let p = ['results', 'artistmatches', 'artist', 'mbid'];
+
+    // download data from api
     data = getJson(forgeRequest(reqTypes.ArtistSearch, name));
+
+    // checks if api returned error
     if(data.hasOwnProperty('error')){return -1;}
-    if(data.results.artistmatches.artist[0].mbid.length < 10){return -1;}
+    
+    // temporary datapoint for checking
+    temp = data;
+
+    // go through json path
+    for (let i = 0; i < p.length; i++){
+        // in first round just chekc if key exits. returns -2 if not. if exits change temp to current key and skip rest of round
+        if(i == 0){if(!temp.hasOwnProperty(p[i])){return -2;}else{temp = temp[p[i]]; continue;}}
+
+        // lets check if current key is array. if it is, temp will be first member. if array is empty return -2
+        if(Array.isArray(temp)){if(temp.length <= 0){return -2;}temp = temp[0];}
+
+        // check if temp has next key from list. if not return -2. if it has temp is next key
+        if(!temp.hasOwnProperty(p[i])){return -2;}else{temp = temp[p[i]];}
+    }
+
+    // if json check above succeed, check if mbid is is not empty. if it is, return -3. if not, return mbid
+    if(data.results.artistmatches.artist[0].mbid.length < 10){return -3;}
     return data.results.artistmatches.artist[0].mbid;
 }
 
+// print top result box
 function printTopResult(){
+    // creates instace of top result template
     let inst = topResultTemp;
+
+    // add values from current variables
     inst.getElementsByClassName("topTitle")[0].innerHTML = jsonInfo.name;
     inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
     inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.stats.listeners;
-    // inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist.name;
         
+    // print html under given parent
     topResultParent.insertAdjacentHTML('beforeend', inst.outerHTML);
 }
 
+// prints tracks
 function printTracks(){
-    var addedTr = 0;
-    var trI = -1;
-    let maxRes = printTrackCount;
+    var addedTr = 0; // track count
+    var trI = -1; // index for tracks
+    let maxRes = printTrackCount; // amount of tracks to show
+
+    // check if theres less results than default print amount is
     if(Object.keys(jsonTracks).length < maxRes){maxRes = Object.keys(jsonTracks).length;}
 
+    // loop until theres enought tracks shown
     while(addedTr < maxRes){
         trI++;
+
+        // current track data as json
         let tr = jsonTracks[trI];
         
+        // creates instace of template
         let inst = trackInfoTemp;
+
+        // add values from current variables
         inst.getElementsByClassName("trImg")[0].src = tr.image[2]['#text'];
         inst.getElementsByClassName("trName")[0].innerHTML = tr.name;
         inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist.name;
         inst.getElementsByClassName("trLen")[0].innerHTML = tr.listeners;
         
         addedTr++;
+
+        // print html under given parent
         topTrackParent.insertAdjacentHTML('beforeend', inst.outerHTML);
     }
 }
 
+// prints albums. Functionality is same as above
 function printAlbums(){
     var addedTr = 0;
     var trI = -1;
@@ -258,6 +343,7 @@ function printAlbums(){
     }
 }
 
+// prints albums. Functionality is same as above
 function printArtist(){
     var addedTr = 0;
     var trI = -1;
@@ -277,9 +363,12 @@ function printArtist(){
     }
 }
 
-// filter settings
+/*
+ *      Filter Settings 
+ */
 
 
+// removes css hides from all elements
 function showAll(){
     if(document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.remove("hideItem");}
     if(document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.remove("hideItem");}
@@ -291,26 +380,31 @@ function showAll(){
     if(document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.remove("hideItem");}
 }
 
+// hides only tracks
 function hideTracks(){
     if(!document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.add("hideItem");}
 }
 
+// shows tracks. There was some display options which need to be done here
 function showTracks(){
     if(!document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.add("hideItem");}
     if(!document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.add("hideItem");}
     if(!document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.add("fixTracksShow");}
 }
 
+// hides only albums
 function hideAlbums(){
     if(!document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.add("hideItem");}
     if(!document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.add("hideItem");}
 }
 
+// hides only artists
 function hideArtists(){
     if(!document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.add("hideItem");}
     if(!document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.add("hideItem");}
 }
 
+// resets filters to default (show all)
 function resetFilters(){
     if(curFilter == 0){return;}
     filterAll.classList.add("typeSelBtnSelected");
@@ -319,43 +413,55 @@ function resetFilters(){
     filterArtist.classList.remove("typeSelBtnSelected");
 }
 
+// function for changing filter graphics
 function updateFilterGraph(){
+    // list of all filter elements
     let fs = [filterAll, filterTracks, filterAlbums, filterArtist];
+
     for(let i = 0; i < fs.length; i++){
+        // if filter i is current filter, change visuals and skip round
         if(curFilter == i){fs[i].classList.add("typeSelBtnSelected"); continue;}
+        // cahges visuals to not selected
         fs[i].classList.remove("typeSelBtnSelected");
     }
 }
 
+// selects sender filter
 function selectFilter(sender){
+    // show all in site
     showAll();
+
     switch(sender.textContent){
-        case "All":
+        case "All": // show all, set print amounts
             curFilter = 0;
             printAlbumCount = 4;
             printArtistCount = 4;
             printTrackCount = 4;
             break;
-        case "Tracks":
+        case "Tracks": // hide all but tracks and set print amount for tracks
             curFilter = 1;
             printTrackCount = 15;
             hideAlbums();
             hideArtists();
             showTracks();
             break;
-        case "Albums":
+        case "Albums": // hide all but albums and set print amount for albums
             curFilter = 2;
             printAlbumCount = 15;
             hideTracks();
             hideArtists();
             break;
-        case "Artists":
+        case "Artists": // hide all but artists and set print amount for artists
             curFilter = 3;
             printArtistCount = 15;
             hideTracks();
             hideAlbums();
             break;
     }
+
+    // updates filters to show right way
     updateFilterGraph();
+
+    // print results
     print();
 }
