@@ -148,7 +148,7 @@ body{
 .topResult{
     display: block;
     margin: 10px;
-    height: 230px;
+    height: 240px;
     padding: 10px;
     background-color: rgb(54, 54, 54);
     border-color: rgb(54, 54, 54);
@@ -158,14 +158,18 @@ body{
     /* width: 300px; */
 }
 
+p{
+    margin: 2px;
+}
+
 .topTitle{
-    font-size: 40px;
+    font-size: 35px;
 }
 
 .topJoker{
-    /* display: none; */
     color: rgb(161, 161, 161);
     padding-right: 15px;
+    padding-left: 2px;
 }
 
 .topType{
@@ -252,7 +256,7 @@ body{
 
 
 .album {
-    height: 230px;
+    height: 235px;
     width: 180px;
     margin: 10px;
     background-color: rgb(54, 54, 54);
@@ -269,15 +273,18 @@ body{
 }
 
 .albName{
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
     font-weight: bold;
     font-size: 17px;
-    margin-left: 10px;
+    /* margin-left: 10px; */
+    padding-left: 10px;
 }
 
 .albArtist{
     font-size: 15px;
     color: rgb(161, 161, 161);
-    margin-left: 10px;
+    padding-left: 9px;
 }
 
 /* 
@@ -315,9 +322,12 @@ body{
 }
 
 .artName{
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
     font-weight: bold;
     font-size: 17px;
-    margin-left: 10px;
+    /* margin-left: 10px; */
+    padding-left: 10px;
 }
 
 .artArtist{
