@@ -32,43 +32,74 @@ var jsonAlbums;
 var jsonSimilar;
 var jsonInfo;
 
-window.onload = function(){
+var obj
+$(document).ready(function(){
+    searchBox = $(".searchIP");
+    console.log(searchBox);
+    topResultTemp = $(".topResult")[0];
+    trackInfoTemp = $(".track")[0];
+    albumInfoTemp = $(".album")[0];
+    artistInfoTemp = $(".artist")[0];
+    searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
 
-    // finding dom elements
-    searchBox = document.getElementsByClassName("searchIP")[0];
-    topResultTemp = document.getElementsByClassName("topResult")[0];
-    trackInfoTemp = document.getElementsByClassName("track")[0];
-    albumInfoTemp = document.getElementsByClassName("album")[0];
-    artistInfoTemp = document.getElementsByClassName("artist")[0];
+    
+    topResultParent = $(".TopResParent")[0];
+    topTrackParent = $(".topSongRes")[0];
+    topAlbumParent = $(".topAlbumRes")[0];
+    topArtistParent = $(".topArtistRes")[0];
+    resultsParent = $(".result")[0];
 
-    topResultParent = document.getElementsByClassName("topResParent")[0];
-    topTrackParent = document.getElementsByClassName("topSongRes")[0];
-    topAlbumParent = document.getElementsByClassName("topAlbumRes")[0];
-    topArtistParent = document.getElementsByClassName("topArtistRes")[0];
-    resultsParent = document.getElementsByClassName("result")[0];
-
-    // finding dom elements with different style
-    let filters = document.getElementsByClassName("typeSelBtn");
+    let filters = $(".typeSelBtn");
     filterAll = filters[0];
     filterTracks = filters[1];
     filterAlbums = filters[2];
     filterArtist = filters[3];
 
-    // remove templates and clear the view
-    clearResults();
-    showResults(false);
-    resetFilters();
+    $(".typeSelBtn").click(function(e){selectFilter(e.target);});
+    // filterAll.click(function(){$(this).hide();});
+    // filterTracks.click(function(){selectFilter(filterTracks);});
+    // filterAlbums.click(function(){selectFilter(filterAlbums);});
+    // filterArtist.click(function(){selectFilter(filterArtist);});
+});
 
-    // adding eventlisteners for search and filters
-    searchBox.addEventListener("keypress", function(e){if(e.key == "Enter"){search();}}, false);
-    filterAll.addEventListener("click", function(e){selectFilter(filterAll)}, false);
-    filterTracks.addEventListener("click", function(e){selectFilter(filterTracks)}, false);
-    filterAlbums.addEventListener("click", function(e){selectFilter(filterAlbums)}, false);
-    filterArtist.addEventListener("click", function(e){selectFilter(filterArtist)}, false);
 
-    // lets make some search 
-    search("Iron maiden");
-}
+// window.onload = function(){
+
+//     // finding dom elements
+//     searchBox = document.getElementsByClassName("searchIP")[0];
+//     topResultTemp = document.getElementsByClassName("topResult")[0];
+//     trackInfoTemp = document.getElementsByClassName("track")[0];
+//     albumInfoTemp = document.getElementsByClassName("album")[0];
+//     artistInfoTemp = document.getElementsByClassName("artist")[0];
+
+//     topResultParent = document.getElementsByClassName("topResParent")[0];
+//     topTrackParent = document.getElementsByClassName("topSongRes")[0];
+//     topAlbumParent = document.getElementsByClassName("topAlbumRes")[0];
+//     topArtistParent = document.getElementsByClassName("topArtistRes")[0];
+//     resultsParent = document.getElementsByClassName("result")[0];
+
+//     // finding dom elements with different style
+//     let filters = document.getElementsByClassName("typeSelBtn");
+//     filterAll = filters[0];
+//     filterTracks = filters[1];
+//     filterAlbums = filters[2];
+//     filterArtist = filters[3];
+
+//     // remove templates and clear the view
+//     clearResults();
+//     showResults(false);
+//     resetFilters();
+
+//     // adding eventlisteners for search and filters
+//     searchBox.addEventListener("keypress", function(e){if(e.key == "Enter"){search();}}, false);
+//     filterAll.addEventListener("click", function(e){selectFilter(filterAll)}, false);
+//     filterTracks.addEventListener("click", function(e){selectFilter(filterTracks)}, false);
+//     filterAlbums.addEventListener("click", function(e){selectFilter(filterAlbums)}, false);
+//     filterArtist.addEventListener("click", function(e){selectFilter(filterArtist)}, false);
+
+//     // lets make some search 
+//     search("Iron maiden");
+// }
 
 /*
 *       HELP FUNCTIONS
@@ -191,12 +222,11 @@ function mbidGetJson(type, mbid){
 
 // search with given keyword
 function search(keyword = ""){
-
+    console.log("Yeaaa hei");
     // lets check if function was called with ot without keyword parameter
-    if(keyword == ""){keyword = searchBox.value;}
+    if(keyword == ""){keyword = searchBox.val();}
     // if theres no keyword applied, cancel search
     if(keyword == ""){return;}
-
     // clear site for new data
     clearResults();
     showResults(false);
@@ -370,14 +400,29 @@ function printArtist(){
 
 // removes css hides from all elements
 function showAll(){
-    if(document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.remove("fixTracksShow");}
-    if(document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.remove("hideItem");}
-    if(document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.remove("hideItem");}
+    if($(".topRow").hasClass("hideItem")){$(".topRow").removeClass("hideItem");}
+    // if(document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.remove("hideItem");}
+
+    if($(".lst3").hasClass("hideItem")){$(".lst3").removeClass("hideItem");}
+    // if(document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.remove("hideItem");}
+
+    if($(".topAlbumRes").hasClass("hideItem")){$(".topAlbumRes").removeClass("hideItem");}
+    // if(document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.remove("hideItem");}
+
+    if($(".lst4").hasClass("hideItem")){$(".lst4").removeClass("hideItem");}
+    // if(document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.remove("hideItem");}
+
+    if($(".topArtistRes").hasClass("hideItem")){$(".topArtistRes").removeClass("hideItem");}
+    // if(document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.remove("hideItem");}
+
+    if($(".topRow").hasClass("fixTracksShow")){$(".topRow").removeClass("fixTracksShow");}
+    // if(document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.remove("fixTracksShow");}
+
+    if($(".topResParent").hasClass("hideItem")){$(".topResParent").removeClass("hideItem");}
+    // if(document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.remove("hideItem");}
+
+    if($(".lst1").hasClass("hideItem")){$(".lst1").removeClass("hideItem");}
+    // if(document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.remove("hideItem");}
 }
 
 // hides only tracks
@@ -407,10 +452,10 @@ function hideArtists(){
 // resets filters to default (show all)
 function resetFilters(){
     if(curFilter == 0){return;}
-    filterAll.classList.add("typeSelBtnSelected");
-    filterTracks.classList.remove("typeSelBtnSelected");
-    filterAlbums.classList.remove("typeSelBtnSelected");
-    filterArtist.classList.remove("typeSelBtnSelected");
+    $(filterAll).addClass("typeSelBtnSelected");
+    $(filterTracks).removeClass("typeSelBtnSelected");
+    $(filterAlbums).removeClass("typeSelBtnSelected");
+    $(filterArtist).removeClass("typeSelBtnSelected");
 }
 
 // function for changing filter graphics
@@ -420,9 +465,9 @@ function updateFilterGraph(){
 
     for(let i = 0; i < fs.length; i++){
         // if filter i is current filter, change visuals and skip round
-        if(curFilter == i){fs[i].classList.add("typeSelBtnSelected"); continue;}
+        if(curFilter == i){$(fs[i]).addClass("typeSelBtnSelected"); continue;}
         // cahges visuals to not selected
-        fs[i].classList.remove("typeSelBtnSelected");
+        $(fs[i]).removeClass("typeSelBtnSelected");
     }
 }
 
@@ -431,7 +476,7 @@ function selectFilter(sender){
     // show all in site
     showAll();
 
-    switch(sender.textContent){
+    switch(sender.textContent){ // KORJAA
         case "All": // show all, set print amounts
             curFilter = 0;
             printAlbumCount = 4;
