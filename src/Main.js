@@ -35,7 +35,6 @@ var jsonInfo;
 var obj
 $(document).ready(function(){
     searchBox = $(".searchIP");
-    console.log(searchBox);
     topResultTemp = $(".topResult")[0];
     trackInfoTemp = $(".track")[0];
     albumInfoTemp = $(".album")[0];
@@ -43,11 +42,11 @@ $(document).ready(function(){
     searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
 
     
-    topResultParent = $(".TopResParent")[0];
-    topTrackParent = $(".topSongRes")[0];
-    topAlbumParent = $(".topAlbumRes")[0];
-    topArtistParent = $(".topArtistRes")[0];
-    resultsParent = $(".result")[0];
+    topResultParent = $(".TopResParent");
+    topTrackParent = $(".topSongRes");
+    topAlbumParent = $(".topAlbumRes");
+    topArtistParent = $(".topArtistRes");
+    resultsParent = $(".result");
 
     let filters = $(".typeSelBtn");
     filterAll = filters[0];
@@ -55,7 +54,11 @@ $(document).ready(function(){
     filterAlbums = filters[2];
     filterArtist = filters[3];
 
+    console.log(topResultParent.html());
+
     $(".typeSelBtn").click(function(e){selectFilter(e.target);});
+
+    clearResults();
     // filterAll.click(function(){$(this).hide();});
     // filterTracks.click(function(){selectFilter(filterTracks);});
     // filterAlbums.click(function(){selectFilter(filterAlbums);});
@@ -107,9 +110,10 @@ $(document).ready(function(){
 
 // function for clearing results
 function clearResults(){
-    // checks if parent has choldren and remove them all for all categories
-    while(topResultParent.children.length>0){
-        topResultParent.children[0].remove();
+    // checks if parent has children and remove them all for all categories
+    console.log(topResultParent);
+    while(topResultParent.children().length>0){
+        topResultParent.children().remove();
     }
     while(topTrackParent.children.length>0){
         topTrackParent.children[0].remove();
@@ -124,11 +128,11 @@ function clearResults(){
 
 // function for switching overall results visibility
 function showResults(visible){
-    if(!visible && !resultsParent.className.includes("hideItem")){
-        resultsParent.classList.add("hideItem");
+    if(!visible && !resultsParent.hasClass("hideItem")){
+        resultsParent.addClass("hideItem");
     }
-    if(visible && resultsParent.className.includes("hideItem")){
-        resultsParent.classList.remove("hideItem");
+    if(visible && resultsParent.hasClass("hideItem")){
+        resultsParent.removeClass("hideItem");
     }
 }
 
