@@ -47,25 +47,25 @@ $(document).ready(function(){
     topArtistParent = $(".topArtistRes");
     resultsParent = $(".result");
 
+    // remove templates and clear the view
+    clearResults();
+    showResults(false);
+    resetFilters();
+
     let filters = $(".typeSelBtn");
     filterAll = filters[0];
     filterTracks = filters[1];
     filterAlbums = filters[2];
     filterArtist = filters[3];
 
+
     // adding eventlisteners for search and filters
     searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
     $(".typeSelBtn").click(function(e){selectFilter(e.target);});
 
-    // remove templates and clear the view
-    clearResults();
-    showResults(false);
-    resetFilters();
-
     // lets make some search 
     search("Iron maiden");
 });
-
 /*
 *       HELP FUNCTIONS
 */
@@ -310,6 +310,8 @@ function printTracks(){
 
         // print element under given parent
         topTrackParent.append(inst);
+        inst.hide();
+        inst.fadeIn(200);
     }
 }
 
@@ -331,6 +333,8 @@ function printAlbums(){
         
         addedTr++;
         topAlbumParent.append(inst);
+        inst.hide();
+        inst.fadeIn(200);
     }
 }
 
@@ -351,6 +355,8 @@ function printArtist(){
         
         addedTr++;
         topArtistParent.append(inst);
+        inst.hide();
+        inst.fadeIn(200);
     }
 }
 
