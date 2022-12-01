@@ -36,9 +36,9 @@ var obj
 $(document).ready(function(){
     searchBox = $(".searchIP");
     topResultTemp = $(".topResult");
-    trackInfoTemp = $(".track")[0];
-    albumInfoTemp = $(".album")[0];
-    artistInfoTemp = $(".artist")[0];
+    trackInfoTemp = $(".track");
+    albumInfoTemp = $(".album");
+    artistInfoTemp = $(".artist");
 
     
     topResultParent = $(".topResParent");
@@ -62,52 +62,9 @@ $(document).ready(function(){
     showResults(false);
     resetFilters();
 
+    // lets make some search 
     search("Iron maiden");
-
-    // filterAll.click(function(){$(this).hide();});
-    // filterTracks.click(function(){selectFilter(filterTracks);});
-    // filterAlbums.click(function(){selectFilter(filterAlbums);});
-    // filterArtist.click(function(){selectFilter(filterArtist);});
 });
-
-
-// window.onload = function(){
-
-//     // finding dom elements
-//     searchBox = document.getElementsByClassName("searchIP")[0];
-//     topResultTemp = document.getElementsByClassName("topResult")[0];
-//     trackInfoTemp = document.getElementsByClassName("track")[0];
-//     albumInfoTemp = document.getElementsByClassName("album")[0];
-//     artistInfoTemp = document.getElementsByClassName("artist")[0];
-
-//     topResultParent = document.getElementsByClassName("topResParent")[0];
-//     topTrackParent = document.getElementsByClassName("topSongRes")[0];
-//     topAlbumParent = document.getElementsByClassName("topAlbumRes")[0];
-//     topArtistParent = document.getElementsByClassName("topArtistRes")[0];
-//     resultsParent = document.getElementsByClassName("result")[0];
-
-//     // finding dom elements with different style
-//     let filters = document.getElementsByClassName("typeSelBtn");
-//     filterAll = filters[0];
-//     filterTracks = filters[1];
-//     filterAlbums = filters[2];
-//     filterArtist = filters[3];
-
-//     // remove templates and clear the view
-//     clearResults();
-//     showResults(false);
-//     resetFilters();
-
-//     // adding eventlisteners for search and filters
-//     searchBox.addEventListener("keypress", function(e){if(e.key == "Enter"){search();}}, false);
-//     filterAll.addEventListener("click", function(e){selectFilter(filterAll)}, false);
-//     filterTracks.addEventListener("click", function(e){selectFilter(filterTracks)}, false);
-//     filterAlbums.addEventListener("click", function(e){selectFilter(filterAlbums)}, false);
-//     filterArtist.addEventListener("click", function(e){selectFilter(filterArtist)}, false);
-
-//     // lets make some search 
-//     search("Iron maiden");
-// }
 
 /*
 *       HELP FUNCTIONS
@@ -238,7 +195,6 @@ function search(keyword = ""){
 
     // gets artist mbid and saves it to variable
     curmbid = getArtistMbid(keyword);
-    console.log(curmbid);
     
     // if mbid is negative, function returned error. In this case search is cancelled and user notified
     if(curmbid < 0){showResults(false);alert("Artist not found");return;}
@@ -261,9 +217,9 @@ function print(){
     // checks which filter is on
     switch(curFilter){
         case 0: // show all
-            printTopResult();showResults(true);return;
-            printAlbums();
+            printTopResult();
             printTracks();
+            printAlbums();
             printArtist();
             break;
         case 1: // show tracks
@@ -314,28 +270,16 @@ function getArtistMbid(name){
 
 // print top result box
 function printTopResult(){
+    // creates instace of top result template
     let inst = topResultTemp;
-    // console.log(inst);
+
     // add values from current variables
     inst.find(".topTitle").html(jsonInfo.name);
-    inst.find(".topJoker").html(jsonInfo.topJoker);
+    inst.find(".topJoker").html(jsonInfo.stats.listeners);
     inst.find(".topImg").attr('src', jsonInfo.image[3]['#text']);
-    // inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
-    // inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.topJoker;
-        
-    // console.log(topResultParent);
+    
     // print html under given parent
     topResultParent.append(inst);
-    // creates instace of top result template
-    // let inst = topResultTemp;
-
-    // // add values from current variables
-    // inst.getElementsByClassName("topTitle")[0].innerHTML = jsonInfo.name;
-    // inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
-    // inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.stats.listeners;
-        
-    // // print html under given parent
-    // $(topResultParent).append(inst);
 }
 
 // prints tracks
@@ -350,23 +294,22 @@ function printTracks(){
     // loop until theres enought tracks shown
     while(addedTr < maxRes){
         trI++;
-
         // current track data as json
         let tr = jsonTracks[trI];
         
         // creates instace of template
-        let inst = trackInfoTemp;
+        let inst = trackInfoTemp.clone();
 
         // add values from current variables
-        inst.getElementsByClassName("trImg")[0].src = tr.image[2]['#text'];
-        inst.getElementsByClassName("trName")[0].innerHTML = tr.name;
-        inst.getElementsByClassName("trArtist")[0].innerHTML = tr.artist.name;
-        inst.getElementsByClassName("trLen")[0].innerHTML = tr.listeners;
+        inst.find(".trImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".trName").html(tr.name);
+        inst.find(".trArtist").html(tr.artist.name);
+        inst.find(".trLen").html(tr.listeners);
         
         addedTr++;
 
-        // print html under given parent
-        topTrackParent.insertAdjacentHTML('beforeend', inst.outerHTML);
+        // print element under given parent
+        topTrackParent.append(inst);
     }
 }
 
@@ -381,13 +324,13 @@ function printAlbums(){
         trI++;
         let tr = jsonAlbums[trI];
         
-        let inst = albumInfoTemp;
-        inst.getElementsByClassName("albImg")[0].src = tr.image[2]['#text'];
-        inst.getElementsByClassName("albName")[0].innerHTML = tr.name;
-        inst.getElementsByClassName("albArtist")[0].innerHTML = tr.artist.name;
+        let inst = albumInfoTemp.clone();
+        inst.find(".albImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".albName").html(tr.name);
+        inst.find(".albArtist").html(tr.artist.name);
         
         addedTr++;
-        topAlbumParent.insertAdjacentHTML('beforeend', inst.outerHTML);
+        topAlbumParent.append(inst);
     }
 }
 
@@ -402,12 +345,12 @@ function printArtist(){
         trI++;
         let tr = jsonSimilar[trI];
         
-        let inst = artistInfoTemp;
-        inst.getElementsByClassName("artImg")[0].src = tr.image[2]['#text'];
-        inst.getElementsByClassName("artName")[0].innerHTML = tr.name;
+        let inst = artistInfoTemp.clone();
+        inst.find(".artImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".artName").html(tr.name);
         
         addedTr++;
-        topArtistParent.insertAdjacentHTML('beforeend', inst.outerHTML);
+        topArtistParent.append(inst);
     }
 }
 
@@ -419,52 +362,50 @@ function printArtist(){
 // removes css hides from all elements
 function showAll(){
     if($(".topRow").hasClass("hideItem")){$(".topRow").removeClass("hideItem");}
-    // if(document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.remove("hideItem");}
 
     if($(".lst3").hasClass("hideItem")){$(".lst3").removeClass("hideItem");}
-    // if(document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.remove("hideItem");}
 
     if($(".topAlbumRes").hasClass("hideItem")){$(".topAlbumRes").removeClass("hideItem");}
-    // if(document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.remove("hideItem");}
 
     if($(".lst4").hasClass("hideItem")){$(".lst4").removeClass("hideItem");}
-    // if(document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.remove("hideItem");}
 
     if($(".topArtistRes").hasClass("hideItem")){$(".topArtistRes").removeClass("hideItem");}
-    // if(document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.remove("hideItem");}
 
     if($(".topRow").hasClass("fixTracksShow")){$(".topRow").removeClass("fixTracksShow");}
-    // if(document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.remove("fixTracksShow");}
 
     if($(".topResParent").hasClass("hideItem")){$(".topResParent").removeClass("hideItem");}
-    // if(document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.remove("hideItem");}
 
     if($(".lst1").hasClass("hideItem")){$(".lst1").removeClass("hideItem");}
-    // if(document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.remove("hideItem");}
 }
 
 // hides only tracks
 function hideTracks(){
-    if(!document.getElementsByClassName("topRow")[0].classList.contains("hideItem")){document.getElementsByClassName("topRow")[0].classList.add("hideItem");}
+    if(!$(".topRow").hasClass("hideItem")){$(".topRow").addClass("hideItem");}
 }
 
 // shows tracks. There was some display options which need to be done here
 function showTracks(){
-    if(!document.getElementsByClassName("topResParent")[0].classList.contains("hideItem")){document.getElementsByClassName("topResParent")[0].classList.add("hideItem");}
-    if(!document.getElementsByClassName("lst1")[0].classList.contains("hideItem")){document.getElementsByClassName("lst1")[0].classList.add("hideItem");}
-    if(!document.getElementsByClassName("topRow")[0].classList.contains("fixTracksShow")){document.getElementsByClassName("topRow")[0].classList.add("fixTracksShow");}
+    if(!$(".topResParent").hasClass("hideItem")){$(".topResParent").addClass("hideItem");}
+
+    if(!$(".lst1").hasClass("hideItem")){$(".lst1").addClass("hideItem");}
+
+    if(!$(".topRow").hasClass("fixTracksShow")){$(".topRow").addClass("fixTracksShow");}
 }
 
 // hides only albums
 function hideAlbums(){
-    if(!document.getElementsByClassName("lst3")[0].classList.contains("hideItem")){document.getElementsByClassName("lst3")[0].classList.add("hideItem");}
-    if(!document.getElementsByClassName("topAlbumRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topAlbumRes")[0].classList.add("hideItem");}
+    if(!$(".lst3").hasClass("hideItem")){$(".lst3").addClass("hideItem");}
+
+    if(!$(".topAlbumRes").hasClass("hideItem")){$(".topAlbumRes").addClass("hideItem");}
+
 }
 
 // hides only artists
 function hideArtists(){
-    if(!document.getElementsByClassName("lst4")[0].classList.contains("hideItem")){document.getElementsByClassName("lst4")[0].classList.add("hideItem");}
-    if(!document.getElementsByClassName("topArtistRes")[0].classList.contains("hideItem")){document.getElementsByClassName("topArtistRes")[0].classList.add("hideItem");}
+    if(!$(".lst4").hasClass("hideItem")){$(".lst4").addClass("hideItem");}
+
+    if(!$(".topArtistRes").hasClass("hideItem")){$(".topArtistRes").addClass("hideItem");}
+    
 }
 
 // resets filters to default (show all)
