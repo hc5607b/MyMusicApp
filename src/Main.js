@@ -301,7 +301,7 @@ function printTracks(){
         let inst = trackInfoTemp.clone();
 
         // add values from current variables
-        inst.find(".trImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".trImg").attr('src', tr.image[2]['#text']);
         inst.find(".trName").html(tr.name);
         inst.find(".trArtist").html(tr.artist.name);
         inst.find(".trLen").html(tr.listeners);
@@ -325,7 +325,7 @@ function printAlbums(){
         let tr = jsonAlbums[trI];
         
         let inst = albumInfoTemp.clone();
-        inst.find(".albImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".albImg").attr('src', tr.image[2]['#text']);
         inst.find(".albName").html(tr.name);
         inst.find(".albArtist").html(tr.artist.name);
         
@@ -346,7 +346,7 @@ function printArtist(){
         let tr = jsonSimilar[trI];
         
         let inst = artistInfoTemp.clone();
-        inst.find(".artImg").attr('src', jsonInfo.image[2]['#text']);
+        inst.find(".artImg").attr('src', tr.image[2]['#text']);
         inst.find(".artName").html(tr.name);
         
         addedTr++;
