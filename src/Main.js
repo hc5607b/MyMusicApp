@@ -32,7 +32,6 @@ var jsonAlbums;
 var jsonSimilar;
 var jsonInfo;
 
-var obj
 $(document).ready(function(){
     searchBox = $(".searchIP");
     topResultTemp = $(".topResult");
@@ -48,6 +47,7 @@ $(document).ready(function(){
     resultsParent = $(".result");
 
     // remove templates and clear the view
+    resultsParent.removeClass("hideItem");
     clearResults();
     showResults(false);
     resetFilters();
@@ -62,7 +62,6 @@ $(document).ready(function(){
     // adding eventlisteners for search and filters
     searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
     $(".typeSelBtn").click(function(e){selectFilter(e.target);});
-
     // lets make some search 
     search("Iron maiden");
 });
@@ -89,12 +88,7 @@ function clearResults(){
 
 // function for switching overall results visibility
 function showResults(visible){
-    if(!visible && !resultsParent.hasClass("hideItem")){
-        resultsParent.addClass("hideItem");
-    }
-    if(visible && resultsParent.hasClass("hideItem")){
-        resultsParent.removeClass("hideItem");
-    }
+    if(visible){resultsParent.fadeIn();return;}resultsParent.fadeOut();
 }
 
 // structure for request urls with search words
@@ -185,13 +179,13 @@ function mbidGetJson(type, mbid){
 
 // search with given keyword
 function search(keyword = ""){
+    showResults(false);
     // lets check if function was called with ot without keyword parameter
     if(keyword == ""){keyword = searchBox.val();}
     // if theres no keyword applied, cancel search
     if(keyword == ""){return;}
     // clear site for new data
     clearResults();
-    showResults(false);
 
     // gets artist mbid and saves it to variable
     curmbid = getArtistMbid(keyword);
@@ -367,50 +361,50 @@ function printArtist(){
 
 // removes css hides from all elements
 function showAll(){
-    if($(".topRow").hasClass("hideItem")){$(".topRow").removeClass("hideItem");}
+    if($(".topRow").is(":hidden")){$(".topRow").show();}
 
-    if($(".lst3").hasClass("hideItem")){$(".lst3").removeClass("hideItem");}
+    if($(".lst3").is(":hidden")){$(".lst3").show();}
 
-    if($(".topAlbumRes").hasClass("hideItem")){$(".topAlbumRes").removeClass("hideItem");}
+    if($(".topAlbumRes").is(":hidden")){$(".topAlbumRes").show();}
 
-    if($(".lst4").hasClass("hideItem")){$(".lst4").removeClass("hideItem");}
+    if($(".lst4").is(":hidden")){$(".lst4").show();}
 
-    if($(".topArtistRes").hasClass("hideItem")){$(".topArtistRes").removeClass("hideItem");}
+    if($(".topArtistRes").is(":hidden")){$(".topArtistRes").show();}
 
     if($(".topRow").hasClass("fixTracksShow")){$(".topRow").removeClass("fixTracksShow");}
 
-    if($(".topResParent").hasClass("hideItem")){$(".topResParent").removeClass("hideItem");}
+    if($(".topResParent").is(":hidden")){$(".topResParent").show();}
 
-    if($(".lst1").hasClass("hideItem")){$(".lst1").removeClass("hideItem");}
+    if($(".lst1").is(":hidden")){$(".lst1").show();}
 }
 
 // hides only tracks
 function hideTracks(){
-    if(!$(".topRow").hasClass("hideItem")){$(".topRow").addClass("hideItem");}
+    if(!$(".topRow").is(":hidden")){$(".topRow").hide();}
 }
 
 // shows tracks. There was some display options which need to be done here
 function showTracks(){
-    if(!$(".topResParent").hasClass("hideItem")){$(".topResParent").addClass("hideItem");}
+    if(!$(".topResParent").is(":hidden")){$(".topResParent").hide();}
 
-    if(!$(".lst1").hasClass("hideItem")){$(".lst1").addClass("hideItem");}
+    if(!$(".lst1").is(":hidden")){$(".lst1").hide();}
 
     if(!$(".topRow").hasClass("fixTracksShow")){$(".topRow").addClass("fixTracksShow");}
 }
 
 // hides only albums
 function hideAlbums(){
-    if(!$(".lst3").hasClass("hideItem")){$(".lst3").addClass("hideItem");}
+    if(!$(".lst3").is(":hidden")){$(".lst3").hide();}
 
-    if(!$(".topAlbumRes").hasClass("hideItem")){$(".topAlbumRes").addClass("hideItem");}
+    if(!$(".topAlbumRes").is(":hidden")){$(".topAlbumRes").hide();}
 
 }
 
 // hides only artists
 function hideArtists(){
-    if(!$(".lst4").hasClass("hideItem")){$(".lst4").addClass("hideItem");}
+    if(!$(".lst4").is(":hidden")){$(".lst4").hide();}
 
-    if(!$(".topArtistRes").hasClass("hideItem")){$(".topArtistRes").addClass("hideItem");}
+    if(!$(".topArtistRes").is(":hidden")){$(".topArtistRes").hide();}
     
 }
 
