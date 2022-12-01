@@ -35,14 +35,13 @@ var jsonInfo;
 var obj
 $(document).ready(function(){
     searchBox = $(".searchIP");
-    topResultTemp = $(".topResult")[0];
+    topResultTemp = $(".topResult");
     trackInfoTemp = $(".track")[0];
     albumInfoTemp = $(".album")[0];
     artistInfoTemp = $(".artist")[0];
-    searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
 
     
-    topResultParent = $(".TopResParent");
+    topResultParent = $(".topResParent");
     topTrackParent = $(".topSongRes");
     topAlbumParent = $(".topAlbumRes");
     topArtistParent = $(".topArtistRes");
@@ -54,11 +53,17 @@ $(document).ready(function(){
     filterAlbums = filters[2];
     filterArtist = filters[3];
 
-    console.log(topResultParent.html());
-
+    // adding eventlisteners for search and filters
+    searchBox.keypress(function(e){if(e.keyCode == '13'){search();}});
     $(".typeSelBtn").click(function(e){selectFilter(e.target);});
 
+    // remove templates and clear the view
     clearResults();
+    showResults(false);
+    resetFilters();
+
+    search("Iron maiden");
+
     // filterAll.click(function(){$(this).hide();});
     // filterTracks.click(function(){selectFilter(filterTracks);});
     // filterAlbums.click(function(){selectFilter(filterAlbums);});
@@ -111,18 +116,17 @@ $(document).ready(function(){
 // function for clearing results
 function clearResults(){
     // checks if parent has children and remove them all for all categories
-    console.log(topResultParent);
     while(topResultParent.children().length>0){
-        topResultParent.children().remove();
+        topResultParent.children()[0].remove();
     }
-    while(topTrackParent.children.length>0){
-        topTrackParent.children[0].remove();
+    while(topTrackParent.children().length>0){
+        topTrackParent.children()[0].remove();
     }
-    while(topAlbumParent.children.length>0){
-        topAlbumParent.children[0].remove();
+    while(topAlbumParent.children().length>0){
+        topAlbumParent.children()[0].remove();
     }
-    while(topArtistParent.children.length>0){
-        topArtistParent.children[0].remove();
+    while(topArtistParent.children().length>0){
+        topArtistParent.children()[0].remove();
     }
 }
 
@@ -182,22 +186,19 @@ function forgeMbidRequest(type, mbid){
 function getJson(type, artist="",album="",track=""){
     var rtn;
     // creates request url with helpfunction. passes paremmetters to helpfunction
-    let url = forgeRequest(type, artist,album,track)
+    let _url = forgeRequest(type, artist,album,track)
 
     // lets create xhttp request and itit it
-    var req = new XMLHttpRequest();
 
-    // creates event listener and function for ready state change
-    req.onreadystatechange = function(){
-        // lets check that everythong went good with request
-        if(this.readyState == 4 && this.status == 200){
-            // changes response text to json and saves it to variable to return
-            rtn = JSON.parse(req.responseText);
+    $.ajax({
+        url: _url,
+        type: 'get',
+        dataType: 'html',
+        async: false,
+        success:function(data){
+            rtn = JSON.parse(data);
         }
-    }
-    // sends unsynchronized get request
-    req.open("GET", url, false);
-    req.send();
+    });
 
     // returns response
     return rtn;
@@ -207,15 +208,16 @@ function getJson(type, artist="",album="",track=""){
 function mbidGetJson(type, mbid){
     // all same things as abowe. only difference is url helpfunction
     var rtn;
-    let url = forgeMbidRequest(type, mbid)
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == 200){
-            rtn = JSON.parse(req.responseText);
+    let _url = forgeMbidRequest(type, mbid)
+    $.ajax({
+        url: _url,
+        type: 'get',
+        dataType: 'html',
+        async: false,
+        success:function(data){
+            rtn = JSON.parse(data);
         }
-    }
-    req.open("GET", url, false);
-    req.send();
+    });
     return rtn;
 }
 
@@ -226,7 +228,6 @@ function mbidGetJson(type, mbid){
 
 // search with given keyword
 function search(keyword = ""){
-    console.log("Yeaaa hei");
     // lets check if function was called with ot without keyword parameter
     if(keyword == ""){keyword = searchBox.val();}
     // if theres no keyword applied, cancel search
@@ -237,7 +238,8 @@ function search(keyword = ""){
 
     // gets artist mbid and saves it to variable
     curmbid = getArtistMbid(keyword);
-
+    console.log(curmbid);
+    
     // if mbid is negative, function returned error. In this case search is cancelled and user notified
     if(curmbid < 0){showResults(false);alert("Artist not found");return;}
 
@@ -259,7 +261,7 @@ function print(){
     // checks which filter is on
     switch(curFilter){
         case 0: // show all
-            printTopResult();
+            printTopResult();showResults(true);return;
             printAlbums();
             printTracks();
             printArtist();
@@ -312,16 +314,28 @@ function getArtistMbid(name){
 
 // print top result box
 function printTopResult(){
-    // creates instace of top result template
     let inst = topResultTemp;
-
+    // console.log(inst);
     // add values from current variables
-    inst.getElementsByClassName("topTitle")[0].innerHTML = jsonInfo.name;
-    inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
-    inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.stats.listeners;
+    inst.find(".topTitle").html(jsonInfo.name);
+    inst.find(".topJoker").html(jsonInfo.topJoker);
+    inst.find(".topImg").attr('src', jsonInfo.image[3]['#text']);
+    // inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
+    // inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.topJoker;
         
+    // console.log(topResultParent);
     // print html under given parent
-    topResultParent.insertAdjacentHTML('beforeend', inst.outerHTML);
+    topResultParent.append(inst);
+    // creates instace of top result template
+    // let inst = topResultTemp;
+
+    // // add values from current variables
+    // inst.getElementsByClassName("topTitle")[0].innerHTML = jsonInfo.name;
+    // inst.getElementsByClassName("topImg")[0].src = jsonInfo.image[3]['#text'];
+    // inst.getElementsByClassName("topJoker")[0].innerHTML = jsonInfo.stats.listeners;
+        
+    // // print html under given parent
+    // $(topResultParent).append(inst);
 }
 
 // prints tracks
